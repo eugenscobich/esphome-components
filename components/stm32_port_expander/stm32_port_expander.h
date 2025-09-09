@@ -26,7 +26,7 @@ class Stm32PortExpanderComponent : public Component, public i2c::I2CDevice {
   /// Helper function to read the voltage of a pin.
   float analog_read(uint8_t pin);
   /// Helper function to read the voltage of a pin.
-  float analog_write(uint8_t pin, float value);
+  void analog_write(uint8_t pin, float value);
 
   float get_setup_priority() const override;
 

@@ -69,8 +69,6 @@ void Stm32PortExpanderComponent::dump_config() {
 }
 
 bool Stm32PortExpanderComponent::digital_read(uint8_t pin) {
-  if (!this->read_valid_)
-    this->read_valid_ = read_();
   uint8_t bit = pin % 8;
   uint8_t value = pin < 8 ? this->read_buffer_[0] : pin < 16 ? this->read_buffer_[1] : this->read_buffer_[2];
   return value & (1 << bit);
@@ -79,7 +77,7 @@ bool Stm32PortExpanderComponent::digital_read(uint8_t pin) {
 void Stm32PortExpanderComponent::digital_write(uint8_t pin, bool value) {
   if (this->is_failed())
     return;
-  this->write_register(&pin, value, 1);
+  this->write_register(&pin, uint8_t(value), 1);
 }
 
 float Stm32PortExpanderComponent::analog_read(uint8_t pin) {
@@ -88,7 +86,7 @@ float Stm32PortExpanderComponent::analog_read(uint8_t pin) {
   if (!success) {
     ESP_LOGW(TAG, "Could not read analog value for pin %d", pin);
     this->status_set_warning();
-    return;
+    return 0;
   }
   ESP_LOGV(TAG, "Analog read pin: %d, success: %d, value %d", pin, success, value);
   return value / 255;
