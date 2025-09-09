@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from voluptuous import NotIn
+
 from esphome import pins
 from esphome.components import i2c, sensor, output
 from esphome.const import (
@@ -15,8 +15,6 @@ from esphome.const import (
 
 CONF_STM32_PORT_EXPANDER = "stm32_port_expander"
 CONF_STM32_PORT_EXPANDER_ID = "stm32_port_expander_id"
-CONF_ANALOG_REFERENCE = "analog_reference"
-CONF_REFERENCE_VOLTAGE = "reference_voltage"
 
 DEPENDENCIES = ["i2c"]
 MULTI_CONF = True
@@ -31,9 +29,6 @@ Stm32PortExpanderGPIOPin = stm32_port_expander_ns.class_(
     "Stm32PortExpanderGPIOPin", cg.GPIOPin
 )
 
-Stm32PortExpanderFloatOutput = stm32_port_expander_ns.class_(
-  "ArduinoPortExpanderFloatOutput", output.FloatOutput
-)
 
 CONF_Stm32PortExpander = "stm32_port_expander"
 
@@ -52,9 +47,6 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     await i2c.register_i2c_device(var, config)
-    cg.add(var.set_analog_reference(config[CONF_ANALOG_REFERENCE]))
-    if CONF_REFERENCE_VOLTAGE in config:
-        cg.add(var.set_reference_voltage(config[CONF_REFERENCE_VOLTAGE]))
 
 
 def validate_mode(value):
