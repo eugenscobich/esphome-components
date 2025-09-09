@@ -79,7 +79,7 @@ void Stm32PortExpanderComponent::digital_write(uint8_t pin, bool value) {
     return;
   }
   uint8_t valueToSend = uint8_t(value);
-  this->write_register(&pin, &valueToSend, 1);
+  this->write_register(pin, &valueToSend, 1);
 }
 
 float Stm32PortExpanderComponent::analog_read(uint8_t pin) {
@@ -99,7 +99,7 @@ void Stm32PortExpanderComponent::analog_write(uint8_t pin, float value) {
     return;
   }
   uint8_t valueToSend = uint8_t(value * 255);
-  this->write_register(&pin, &valueToSend, 1);
+  this->write_register(pin, &valueToSend, 1);
 }
 
 
