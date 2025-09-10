@@ -4,7 +4,7 @@
 #include "esphome/core/hal.h"
 #include "esphome/components/i2c/i2c.h"
 
-#define MAX_NUMBER_OF_PINS 24
+#define MAX_NUMBER_OF_PINS 28
 #define MAX_NUMBER_OF_ERRORS 3
 
 namespace esphome {
