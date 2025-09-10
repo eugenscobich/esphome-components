@@ -1,6 +1,7 @@
 #pragma once
 
 #include "esphome/components/output/float_output.h"
+#include "../stm32_port_expander.h"
 
 namespace esphome {
 namespace stm32_port_expander {
