@@ -1,4 +1,4 @@
-#include "stm32_port_expander.h"
+#include "stm32_port_expander_float_output.h"
 #include "esphome/core/application.h"
 #include "esphome/core/log.h"
 

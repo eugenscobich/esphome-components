@@ -1,11 +1,6 @@
 #pragma once
 
 #include "esphome/core/component.h"
-#include "esphome/core/hal.h"
-#include "esphome/components/i2c/i2c.h"
-
-#define MAX_NUMBER_OF_PINS 30
-#define MAX_NUMBER_OF_ERRORS 3
 
 namespace esphome {
 namespace stm32_port_expander {
