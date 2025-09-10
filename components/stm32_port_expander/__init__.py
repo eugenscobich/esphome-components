@@ -88,4 +88,5 @@ async def Stm32PortExpander_pin_to_code(config):
     num = config[CONF_NUMBER]
     cg.add(var.set_pin(num))
     cg.add(var.set_inverted(config[CONF_INVERTED]))
+    cg.add(var.set_flags(pins.gpio_flags_expr(config[CONF_MODE])))
     return var
