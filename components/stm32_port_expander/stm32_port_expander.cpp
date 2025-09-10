@@ -7,7 +7,7 @@ namespace stm32_port_expander {
 
 static const char *const TAG = "stm32_port_expander";
 
-static const uint32_t CONFIGURE_TIMEOUT_MS = 5000;
+static const uint32_t CONFIGURE_TIMEOUT_MS = 3000;
 
 static const uint8_t CMD_ACK = 0; // Read value from first pin
 
