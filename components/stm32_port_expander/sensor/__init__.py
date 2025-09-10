@@ -14,13 +14,15 @@ Stm32PortExpanderSensor = stm32_port_expander_ns.class_(
     "Stm32PortExpanderSensor", sensor.Sensor, cg.PollingComponent
 )
 
-CONFIG_SCHEMA = sensor.SENSOR_SCHEMA.extend(
-  {
+CONFIG_SCHEMA = cv.All(
+  sensor.sensor_schema(Stm32PortExpanderSensor)
+  .extend({
     cv.Required(CONF_ID): cv.declare_id(Stm32PortExpanderSensor),
     cv.GenerateID(CONF_STM32_PORT_EXPANDER_ID): cv.use_id(Stm32PortExpanderComponent),
     cv.Required(CONF_PIN): cv.int_range(min=0, max=29),
-  }
-).extend(cv.polling_component_schema("1s"))
+  })
+  .extend(cv.polling_component_schema("1s"))
+)
 
 async def to_code(config):
   parent = await cg.get_variable(config[CONF_STM32_PORT_EXPANDER_ID])
