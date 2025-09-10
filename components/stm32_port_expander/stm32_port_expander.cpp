@@ -26,7 +26,7 @@ void Stm32PortExpanderComponent::loop() {
         ESP_LOGE(TAG, "Error reading digital input at pin[%d].", pin);
         return;
       }
-      ESP_LOGD(TAG, "Successful received binary sensor value[%d] for pin[%d].", this->pin_values_[pin], pin);
+      //ESP_LOGD(TAG, "Successful received binary sensor value[%d] for pin[%d].", this->pin_values_[pin], pin);
     }
   }
 }
