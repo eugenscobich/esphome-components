@@ -10,18 +10,10 @@ void Stm32PortExpanderSensor::set_pin(uint8_t pin) {
   this->parent_->add_input_pin(this->pin_);
 };
 
-float Stm32PortExpanderSensor::sample() {
-  uint8_t value = this->parent_->read_pin_value(this->pin_);
-  return value / 100;
-}
-
 void Stm32PortExpanderSensor::update() {
   uint8_t value = this->parent_->read_pin_value(this->pin_);
   this->publish_state(value / 100);
 }
-
-
-
 
 }  // namespace stm32_port_expander
 }  // namespace esphome
