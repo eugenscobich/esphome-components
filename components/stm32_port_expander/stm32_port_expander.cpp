@@ -53,18 +53,6 @@ void Stm32PortExpanderComponent::digital_write(uint8_t pin, bool value) {
   }
 }
 
-uint8_t Stm32PortExpanderComponent::analog_read(uint8_t pin) {
-  uint8_t value;
-  bool success = this->read_register(pin, &value, 1);
-  if (!success) {
-    ESP_LOGW(TAG, "Could not read analog value for pin %d", pin);
-    this->status_set_warning();
-    return 0;
-  }
-  ESP_LOGV(TAG, "Analog read pin: %d, success: %d, value %d", pin, success, value);
-  return value;
-}
-
 void Stm32PortExpanderComponent::analog_write(uint8_t pin, uint8_t value) {
   bool success = this->write_register(pin, &value, 1);
   if (!success) {

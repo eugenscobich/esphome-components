@@ -1,0 +1,24 @@
+#include "stm32_port_expander_sensor.h"
+#include "esphome/core/application.h"
+#include "esphome/core/log.h"
+
+namespace esphome {
+namespace stm32_port_expander {
+
+void Stm32PortExpanderSensor::set_pin(uint8_t pin) {
+  this->pin_ = pin;
+  this->parent_->add_input_pin(this->pin_);
+};
+
+float Stm32PortExpanderSensor::sample() {
+  uint8_t value = this->parent_->read_pin_value(this->pin_);
+  return value / 100;
+}
+
+void Stm32PortExpanderSensor::update() {
+  this->publish_state(this->sample());
+}
+
+
+}  // namespace stm32_port_expander
+}  // namespace esphome
