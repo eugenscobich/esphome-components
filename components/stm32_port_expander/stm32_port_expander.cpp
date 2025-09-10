@@ -20,19 +20,15 @@ void Stm32PortExpanderComponent::setup() {
 }
 
 void Stm32PortExpanderComponent::loop() {
-      for (uint8_t pin = 0; pin < MAX_NUMBER_OF_PINS; pin++) {
-        if (enabled_pins_[pin]) {
-          if (ERROR_OK != this->read_register(pin, this->pin_values_ + pin, 1)) {
-            ESP_LOGE(logTag, "Error reading digital input at pin[%d].", pin);
-            return;
-          }
-          ESP_LOGD(logTag, "Successful received binary sensor value[%d] for pin[%d].", this->pin_values_[pin], pin);
-        }
+  for (uint8_t pin = 0; pin < MAX_NUMBER_OF_PINS; pin++) {
+    if (enabled_pins_[pin]) {
+      if (i2c::ERROR_OK != this->read_register(pin, this->pin_values_ + pin, 1)) {
+        ESP_LOGE(TAG, "Error reading digital input at pin[%d].", pin);
+        return;
       }
-	}
-
-
-    //this->status_clear_warning();
+      ESP_LOGD(TAG, "Successful received binary sensor value[%d] for pin[%d].", this->pin_values_[pin], pin);
+    }
+  }
 }
 
 void Stm32PortExpanderComponent::dump_config() {
