@@ -96,7 +96,7 @@ void Stm32PortExpanderGPIOPin::pin_mode(gpio::Flags flags) {
 }
 
 bool Stm32PortExpanderGPIOPin::digital_read() {
-  return this->parent_->digital_read(this->pin_) != this->inverted_;
+  return this->parent_->read_pin_value(this->pin_) != this->inverted_;
 }
 
 void Stm32PortExpanderGPIOPin::digital_write(bool value) {
