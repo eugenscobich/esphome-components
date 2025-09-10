@@ -32,7 +32,7 @@ void Stm32PortExpanderComponent::setup() {
 }
 
 void Stm32PortExpanderComponent::loop() {
-    this->status_clear_warning();
+    //this->status_clear_warning();
 }
 
 void Stm32PortExpanderComponent::dump_config() {
@@ -51,7 +51,7 @@ bool Stm32PortExpanderComponent::digital_read(uint8_t pin) {
     this->status_set_warning();
     return false;
   }
-  return data;
+  return data == 1;
 }
 
 void Stm32PortExpanderComponent::digital_write(uint8_t pin, bool value) {
@@ -86,7 +86,9 @@ void Stm32PortExpanderComponent::analog_write(uint8_t pin, uint8_t value) {
 }
 
 
-void Stm32PortExpanderGPIOPin::setup() {}
+void Stm32PortExpanderGPIOPin::setup() {
+   ESP_LOGCONFIG(TAG, "Setting up Stm32PortExpanderGPIOPin");
+}
 
 bool Stm32PortExpanderGPIOPin::digital_read() {
   return this->parent_->digital_read(this->pin_) != this->inverted_;
