@@ -6,7 +6,7 @@
 namespace esphome {
 namespace stm32_port_expander {
 
-class Stm32PortExpanderSensor : public sensor::Sensor {
+class Stm32PortExpanderSensor : public sensor::Sensor, public PollingComponent {
  public:
   void set_parent(Stm32PortExpanderComponent *parent) {
     this->parent_ = parent;
@@ -14,7 +14,6 @@ class Stm32PortExpanderSensor : public sensor::Sensor {
   void set_pin(uint8_t pin);
 
   void update() override;
-  float sample() override;
 
  protected:
   uint8_t pin_;

@@ -16,8 +16,11 @@ float Stm32PortExpanderSensor::sample() {
 }
 
 void Stm32PortExpanderSensor::update() {
-  this->publish_state(this->sample());
+  uint8_t value = this->parent_->read_pin_value(this->pin_);
+  this->publish_state(value / 100);
 }
+
+
 
 
 }  // namespace stm32_port_expander
