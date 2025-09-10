@@ -4,6 +4,8 @@
 #include "esphome/core/hal.h"
 #include "esphome/components/i2c/i2c.h"
 
+#define MAX_NUMBER_OF_PINS
+
 namespace esphome {
 namespace stm32_port_expander {
 
@@ -15,7 +17,7 @@ class Stm32PortExpanderComponent : public Component, public i2c::I2CDevice {
   /// Poll i2c
   void loop() override;
   /// Helper function to read the value of a pin.
-  bool digital_read(uint8_t pin);
+  uint8_t read_pin_value(uint8_t pin);
   /// Helper function to write the value of a pin.
   void digital_write(uint8_t pin, bool value);
   /// Helper function to read the voltage of a pin.
@@ -27,9 +29,11 @@ class Stm32PortExpanderComponent : public Component, public i2c::I2CDevice {
 
   void dump_config() override;
 
+  void add_input_pin(uint8_t pin);
+
  private:
-  std::vector<uint8_t*> digital_input_pins_;
-  std::vector<uint8_t*> analog_input_pins_;
+  bool enabled_pins_[MAX_NUMBER_OF_PINS];
+  uint8_t pin_values_[MAX_NUMBER_OF_PINS];
 };
 
 
@@ -46,12 +50,11 @@ class Stm32PortExpanderGPIOPin : public GPIOPin {
   bool digital_read() override;
   void digital_write(bool value) override;
   std::string dump_summary() const override;
+  gpio::Flags get_flags() const override { return this->flags_; }
 
   void set_parent(Stm32PortExpanderComponent *parent) { this->parent_ = parent; }
   void set_pin(uint8_t pin) { this->pin_ = pin; }
   void set_inverted(bool inverted) { this->inverted_ = inverted; }
-  void set_flags(gpio::Flags flags) { this->flags_ = flags; }
-  gpio::Flags get_flags() const override { return this->flags_; }
 
  protected:
   Stm32PortExpanderComponent *parent_;

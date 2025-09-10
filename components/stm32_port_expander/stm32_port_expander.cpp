@@ -16,10 +16,22 @@ float Stm32PortExpanderComponent::get_setup_priority() const {
 }
 
 void Stm32PortExpanderComponent::setup() {
-  ESP_LOGCONFIG(TAG, "Setting up Stm32PortExpander at %#02x ...", this->address_);
+  ESP_LOGCONFIG(TAG, "Setting up Stm32PortExpander at %#02x", this->address_);
 }
 
 void Stm32PortExpanderComponent::loop() {
+      for (uint8_t pin = 0; pin < MAX_NUMBER_OF_PINS; pin++) {
+        if (enabled_pins_[pin]) {
+          if (ERROR_OK != this->read_register(pin, this->pin_values_ + pin, 1)) {
+            ESP_LOGE(logTag, "Error reading digital input at pin[%d].", pin);
+            return;
+          }
+          ESP_LOGD(logTag, "Successful received binary sensor value[%d] for pin[%d].", this->pin_values_[pin], pin);
+        }
+      }
+	}
+
+
     //this->status_clear_warning();
 }
 
@@ -28,15 +40,8 @@ void Stm32PortExpanderComponent::dump_config() {
   LOG_I2C_DEVICE(this)
 }
 
-bool Stm32PortExpanderComponent::digital_read(uint8_t pin) {
-  uint8_t data = 0;
-  bool success = (this->read_register(pin, &data, 1) == i2c::ERROR_OK);
-  if (!success) {
-    ESP_LOGW(TAG, "Could not read digital value for pin %d", pin);
-    this->status_set_warning();
-    return false;
-  }
-  return data == 1;
+uint8_t Stm32PortExpanderComponent::read_pin_value(uint8_t pin) {
+  return this->pin_values_[pin];
 }
 
 void Stm32PortExpanderComponent::digital_write(uint8_t pin, bool value) {
@@ -70,12 +75,28 @@ void Stm32PortExpanderComponent::analog_write(uint8_t pin, uint8_t value) {
   }
 }
 
+
+void Stm32PortExpanderComponent::add_input_pin(uint8_t pin) {
+  ESP_LOGCONFIG(TAG, "Adding pin %d as input", pin);
+  this->pin_values_[pin] = true;
+}
+
+
+
+
+
+
+
 void Stm32PortExpanderGPIOPin::setup() {
    ESP_LOGCONFIG(TAG, "Setting up Stm32PortExpanderGPIOPin");
+   if (this->flags_ == FLAG_INPUT) {
+     this->parent_->add_input_pin(this->pin_);
+   }
 }
 
 void Stm32PortExpanderGPIOPin::pin_mode(gpio::Flags flags) {
    ESP_LOGCONFIG(TAG, "Setting up pin mode for Stm32PortExpanderGPIOPin");
+   this->flags_ = flags
 }
 
 bool Stm32PortExpanderGPIOPin::digital_read() {

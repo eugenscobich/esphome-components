@@ -62,7 +62,7 @@ STM32_PORT_EXPANDER_PIN_SCHEMA = cv.All(
         cv.GenerateID(): cv.declare_id(Stm32PortExpanderGPIOPin),
         cv.Required(CONF_Stm32PortExpander): cv.use_id(Stm32PortExpanderComponent),
         cv.Required(CONF_NUMBER): cv.All(
-            cv.int_range(min=0, max=24)
+            cv.int_range(min=0, max=23)
         ),
         cv.Optional(CONF_MODE, default={}): cv.All(
             {
@@ -88,5 +88,4 @@ async def Stm32PortExpander_pin_to_code(config):
     num = config[CONF_NUMBER]
     cg.add(var.set_pin(num))
     cg.add(var.set_inverted(config[CONF_INVERTED]))
-    cg.add(var.set_flags(pins.gpio_flags_expr(config[CONF_MODE])))
     return var
