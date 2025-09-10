@@ -8,6 +8,9 @@ namespace stm32_port_expander {
 
 class Stm32PortExpanderSensor : public sensor::Sensor, public PollingComponent {
  public:
+
+  void setup() override;
+
   void set_parent(Stm32PortExpanderComponent *parent) {
     this->parent_ = parent;
   }
