@@ -67,8 +67,7 @@ STM32_PORT_EXPANDER_PIN_SCHEMA = cv.All(
         cv.Optional(CONF_MODE, default={}): cv.All(
             {
                 cv.Optional(CONF_INPUT, default=False): cv.boolean,
-                cv.Optional(CONF_OUTPUT, default=False): cv.boolean,
-                cv.Optional(CONF_PULLUP, default=False): cv.boolean,
+                cv.Optional(CONF_OUTPUT, default=False): cv.boolean
             },
             validate_mode,
         ),
