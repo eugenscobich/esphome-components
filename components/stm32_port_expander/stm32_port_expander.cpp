@@ -90,6 +90,10 @@ void Stm32PortExpanderGPIOPin::setup() {
    ESP_LOGCONFIG(TAG, "Setting up Stm32PortExpanderGPIOPin");
 }
 
+void Stm32PortExpanderGPIOPin::pin_mode(gpio::Flags flags) {
+   ESP_LOGCONFIG(TAG, "Setting up pin mode for Stm32PortExpanderGPIOPin");
+}
+
 bool Stm32PortExpanderGPIOPin::digital_read() {
   return this->parent_->digital_read(this->pin_) != this->inverted_;
 }
