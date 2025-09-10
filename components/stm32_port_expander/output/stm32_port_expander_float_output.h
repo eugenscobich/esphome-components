@@ -6,9 +6,9 @@
 namespace esphome {
 namespace stm32_port_expander {
 
-class ArduinoPortExpanderFloatOutput : public output::FloatOutput {
+class Stm32PortExpanderFloatOutput : public output::FloatOutput {
  public:
-  void set_parent(ArduinoPortExpanderComponent *parent) {
+  void set_parent(Stm32PortExpanderComponent *parent) {
     this->parent_ = parent;
   }
   void set_channel(uint8_t pin) {
@@ -17,7 +17,7 @@ class ArduinoPortExpanderFloatOutput : public output::FloatOutput {
 
  protected:
   uint8_t pin_;
-  ArduinoPortExpanderComponent *parent_;
+  Stm32PortExpanderComponent *parent_;
   void write_state(float state) override;
 };
 
