@@ -26,7 +26,7 @@ class Stm32PortExpanderComponent : public Component, public i2c::I2CDevice {
   /// Helper function to read the voltage of a pin.
   uint8_t analog_read(uint8_t pin);
   /// Helper function to read the voltage of a pin.
-  void analog_write(uint8_t pin, float value);
+  void analog_write(uint8_t pin, uint8_t value);
 
   float get_setup_priority() const override;
 
@@ -42,6 +42,7 @@ class Stm32PortExpanderComponent : public Component, public i2c::I2CDevice {
 /// Helper class to expose a Stm32PortExpander pin as an internal input GPIO pin.
 class Stm32PortExpanderGPIOPin : public GPIOPin {
  public:
+  void setup() override;
   void pin_mode(gpio::Flags flags) override;
 
   bool digital_read() override;

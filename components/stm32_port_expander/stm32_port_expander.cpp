@@ -49,12 +49,13 @@ bool Stm32PortExpanderComponent::digital_read(uint8_t pin) {
   if (!success) {
     ESP_LOGW(TAG, "Could not read digital value for pin %d", pin);
     this->status_set_warning();
-    return;
+    return false;
   }
   return data == 1 ? true : false;
 }
 
 void Stm32PortExpanderComponent::digital_write(uint8_t pin, bool value) {
+  uint8_t valueToSend = uint8_t(value);
   bool success = (this->write_register(pin, &valueToSend, 1) == i2c::ERROR_OK);
   if (!success) {
     ESP_LOGW(TAG, "Could not write digital value %d to pin %d", valueToSend, pin);
@@ -84,6 +85,8 @@ void Stm32PortExpanderComponent::analog_write(uint8_t pin, uint8_t value) {
   }
 }
 
+
+void Stm32PortExpanderGPIOPin::setup() {}
 
 bool Stm32PortExpanderGPIOPin::digital_read() {
   return this->parent_->digital_read(this->pin_) != this->inverted_;
