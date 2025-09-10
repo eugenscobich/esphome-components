@@ -85,7 +85,7 @@ void Stm32PortExpanderComponent::add_input_pin(uint8_t pin) {
 
 void Stm32PortExpanderGPIOPin::setup() {
    ESP_LOGCONFIG(TAG, "Setting up Stm32PortExpanderGPIOPin");
-   if (this->flags_ == FLAG_INPUT) {
+   if (this->flags_ == gpio::Flags.FLAG_INPUT) {
      this->parent_->add_input_pin(this->pin_);
    }
 }
