@@ -51,7 +51,7 @@ bool Stm32PortExpanderComponent::digital_read(uint8_t pin) {
     this->status_set_warning();
     return false;
   }
-  return data == 1 ? true : false;
+  return data;
 }
 
 void Stm32PortExpanderComponent::digital_write(uint8_t pin, bool value) {

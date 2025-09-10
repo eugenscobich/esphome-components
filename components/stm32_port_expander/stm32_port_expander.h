@@ -7,11 +7,6 @@
 namespace esphome {
 namespace stm32_port_expander {
 
-enum Stm32PortExpanderAnalogReference : uint8_t {
-  ANALOG_REFERENCE_INTERNAL = 0x10,
-  ANALOG_REFERENCE_DEFAULT = 0x11,
-};
-
 class Stm32PortExpanderComponent : public Component, public i2c::I2CDevice {
  public:
   Stm32PortExpanderComponent() = default;
