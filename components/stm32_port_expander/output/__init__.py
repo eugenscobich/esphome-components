@@ -9,7 +9,6 @@ from esphome.const import (
 )
 
 DEPENDENCIES = ["stm32_port_expander"]
-MULTI_CONF = True
 
 Stm32PortExpanderFloatOutput = stm32_port_expander_ns.class_(
     "Stm32PortExpanderFloatOutput", output.FloatOutput
