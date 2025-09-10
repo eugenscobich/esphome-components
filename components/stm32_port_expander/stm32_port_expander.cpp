@@ -28,7 +28,7 @@ void Stm32PortExpanderComponent::setup() {
       return;
     }
   };
-  this.failed = false;
+  this->failed = false;
   ESP_LOGCONFIG(TAG, "Successfully configured. Acknowledgment message is: %d", data[0]);
 }
 
@@ -39,13 +39,13 @@ void Stm32PortExpanderComponent::loop() {
 void Stm32PortExpanderComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "Stm32PortExpander:");
   LOG_I2C_DEVICE(this)
-  if (this->is_failed()) {
+  if (this->failed) {
     ESP_LOGE(TAG, "Communication with Stm32PortExpander failed!");
   }
 }
 
 bool Stm32PortExpanderComponent::digital_read(uint8_t pin) {
-  if (this.failed) {
+  if (this->failed) {
     return false;
   }
   uint8_t data = 0;
@@ -59,7 +59,7 @@ bool Stm32PortExpanderComponent::digital_read(uint8_t pin) {
 }
 
 void Stm32PortExpanderComponent::digital_write(uint8_t pin, bool value) {
-  if (this.failed) {
+  if (this->failed) {
     return;
   }
   uint8_t valueToSend = uint8_t(value);
@@ -72,7 +72,7 @@ void Stm32PortExpanderComponent::digital_write(uint8_t pin, bool value) {
 }
 
 uint8_t Stm32PortExpanderComponent::analog_read(uint8_t pin) {
-  if (this.failed) {
+  if (this->failed) {
     return 0;
   }
   uint8_t value;
@@ -87,7 +87,7 @@ uint8_t Stm32PortExpanderComponent::analog_read(uint8_t pin) {
 }
 
 void Stm32PortExpanderComponent::analog_write(uint8_t pin, uint8_t value) {
-  if (this.failed) {
+  if (this->failed) {
     return;
   }
   bool success = this->write_register(pin, &value, 1);
