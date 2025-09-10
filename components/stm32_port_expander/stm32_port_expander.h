@@ -5,6 +5,7 @@
 #include "esphome/components/i2c/i2c.h"
 
 #define MAX_NUMBER_OF_PINS 24
+#define MAX_NUMBER_OF_ERRORS 3
 
 namespace esphome {
 namespace stm32_port_expander {
@@ -34,6 +35,7 @@ class Stm32PortExpanderComponent : public Component, public i2c::I2CDevice {
  private:
   bool enabled_pins_[MAX_NUMBER_OF_PINS];
   uint8_t pin_values_[MAX_NUMBER_OF_PINS];
+  uint8_t number_of_errors_;
 };
 
 
