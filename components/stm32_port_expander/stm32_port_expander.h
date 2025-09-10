@@ -42,7 +42,6 @@ class Stm32PortExpanderComponent : public Component, public i2c::I2CDevice {
 /// Helper class to expose a Stm32PortExpander pin as an internal input GPIO pin.
 class Stm32PortExpanderGPIOPin : public GPIOPin {
  public:
-  void setup() override;
   void pin_mode(gpio::Flags flags) override;
 
   bool digital_read() override;
@@ -56,6 +55,7 @@ class Stm32PortExpanderGPIOPin : public GPIOPin {
   gpio::Flags get_flags() const override { return this->flags_; }
 
  protected:
+  void setup() override;
   Stm32PortExpanderComponent *parent_;
   uint8_t pin_;
   bool inverted_;
