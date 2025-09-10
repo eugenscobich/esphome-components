@@ -27,6 +27,9 @@ class Stm32PortExpanderComponent : public Component, public i2c::I2CDevice {
 
   void dump_config() override;
 
+ private:
+  std::vector<uint8_t*> digital_input_pins_;
+  std::vector<uint8_t*> analog_input_pins_;
 };
 
 
