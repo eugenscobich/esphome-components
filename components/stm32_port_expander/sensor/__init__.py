@@ -27,5 +27,4 @@ async def to_code(config):
   var = cg.new_Pvariable(config[CONF_ID])
   cg.add(var.set_pin(config[CONF_PIN]))
   cg.add(var.set_parent(parent))
-  await cg.register_component(var, config)
   await sensor.register_sensor(var, config)
