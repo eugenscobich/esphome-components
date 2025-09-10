@@ -92,7 +92,7 @@ void Stm32PortExpanderGPIOPin::setup() {
 
 void Stm32PortExpanderGPIOPin::pin_mode(gpio::Flags flags) {
    ESP_LOGCONFIG(TAG, "Setting up pin mode for Stm32PortExpanderGPIOPin");
-   this->flags_ = flags
+   this->flags_ = flags;
 }
 
 bool Stm32PortExpanderGPIOPin::digital_read() {
