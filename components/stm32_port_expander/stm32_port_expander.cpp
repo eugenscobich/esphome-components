@@ -17,19 +17,6 @@ float Stm32PortExpanderComponent::get_setup_priority() const {
 
 void Stm32PortExpanderComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up Stm32PortExpander at %#02x ...", this->address_);
-  uint8_t data[1];
-  uint32_t timeout = millis() + CONFIGURE_TIMEOUT_MS;
-
-  while (this->read_register(CMD_ACK, data, 1) != i2c::ERROR_OK) {
-    App.feed_wdt();
-    if (millis() > timeout) {
-      ESP_LOGE(TAG, "Stm32PortExpander not available at 0x%02X", this->address_);
-      this->mark_failed();
-      return;
-    }
-  };
-  this->failed = false;
-  ESP_LOGCONFIG(TAG, "Successfully configured. Acknowledgment message is: %d", data[0]);
 }
 
 void Stm32PortExpanderComponent::loop() {
@@ -45,9 +32,6 @@ void Stm32PortExpanderComponent::dump_config() {
 }
 
 bool Stm32PortExpanderComponent::digital_read(uint8_t pin) {
-  if (this->failed) {
-    return false;
-  }
   uint8_t data = 0;
   bool success = (this->read_register(pin, &data, 1) == i2c::ERROR_OK);
   if (!success) {
@@ -59,9 +43,6 @@ bool Stm32PortExpanderComponent::digital_read(uint8_t pin) {
 }
 
 void Stm32PortExpanderComponent::digital_write(uint8_t pin, bool value) {
-  if (this->failed) {
-    return;
-  }
   uint8_t valueToSend = uint8_t(value);
   bool success = (this->write_register(pin, &valueToSend, 1) == i2c::ERROR_OK);
   if (!success) {
@@ -72,9 +53,6 @@ void Stm32PortExpanderComponent::digital_write(uint8_t pin, bool value) {
 }
 
 uint8_t Stm32PortExpanderComponent::analog_read(uint8_t pin) {
-  if (this->failed) {
-    return 0;
-  }
   uint8_t value;
   bool success = this->read_register(pin, &value, 1);
   if (!success) {
@@ -87,9 +65,6 @@ uint8_t Stm32PortExpanderComponent::analog_read(uint8_t pin) {
 }
 
 void Stm32PortExpanderComponent::analog_write(uint8_t pin, uint8_t value) {
-  if (this->failed) {
-    return;
-  }
   bool success = this->write_register(pin, &value, 1);
   if (!success) {
     ESP_LOGW(TAG, "Could not write analog value %d to pin %d", value, pin);

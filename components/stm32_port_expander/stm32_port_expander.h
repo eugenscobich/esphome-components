@@ -27,8 +27,6 @@ class Stm32PortExpanderComponent : public Component, public i2c::I2CDevice {
 
   void dump_config() override;
 
- private:
-  bool failed = true;
 };
 
 
