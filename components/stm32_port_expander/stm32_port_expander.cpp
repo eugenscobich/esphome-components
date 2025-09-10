@@ -74,7 +74,7 @@ void Stm32PortExpanderComponent::analog_write(uint8_t pin, uint8_t value) {
 
 void Stm32PortExpanderComponent::add_input_pin(uint8_t pin) {
   ESP_LOGCONFIG(TAG, "Adding pin %d as input", pin);
-  this->pin_values_[pin] = true;
+  this->enabled_pins_[pin] = true;
 }
 
 
@@ -91,7 +91,7 @@ void Stm32PortExpanderGPIOPin::setup() {
 }
 
 void Stm32PortExpanderGPIOPin::pin_mode(gpio::Flags flags) {
-   ESP_LOGCONFIG(TAG, "Setting up pin mode for Stm32PortExpanderGPIOPin");
+   ESP_LOGCONFIG(TAG, "Setting up pin mode for Stm32PortExpanderGPIOPin = %d", flags);
    this->flags_ = flags;
 }
 
