@@ -26,9 +26,6 @@ void Stm32PortExpanderComponent::loop() {
 void Stm32PortExpanderComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "Stm32PortExpander:");
   LOG_I2C_DEVICE(this)
-  if (this->failed) {
-    ESP_LOGE(TAG, "Communication with Stm32PortExpander failed!");
-  }
 }
 
 bool Stm32PortExpanderComponent::digital_read(uint8_t pin) {
