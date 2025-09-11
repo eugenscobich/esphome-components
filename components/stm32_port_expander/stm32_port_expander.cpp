@@ -54,7 +54,7 @@ void Stm32PortExpanderComponent::digital_write(uint8_t pin, bool value) {
 }
 
 void Stm32PortExpanderComponent::analog_write(uint8_t pin, uint8_t value) {
-  bool success = this->write_register(pin, &value, 1);
+  bool success = this->write_register(pin, &value, 1) == i2c::ERROR_OK;
   if (!success) {
     ESP_LOGW(TAG, "Could not write analog value %d to pin %d", value, pin);
     this->status_set_warning();
