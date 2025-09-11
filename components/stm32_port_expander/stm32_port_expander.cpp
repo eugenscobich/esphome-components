@@ -20,16 +20,20 @@ void Stm32PortExpanderComponent::setup() {
 }
 
 void Stm32PortExpanderComponent::loop() {
-  for (uint8_t pin = 0; pin < 30; pin++) {
+  for (uint8_t pin = 0; pin < MAX_NUMBER_OF_PINS; pin++) {
     if (enabled_pins_[pin]) {
-      if (i2c::ERROR_OK != this->read_register(pin, this->pin_values_ + pin, 1)) {
-        if(this->number_of_errors_++ > MAX_NUMBER_OF_ERRORS) {
-          ESP_LOGE(TAG, "Error reading input at pin: %d, %d times consecutively.", pin, MAX_NUMBER_OF_ERRORS);
+      bool success = false;
+      for (uint8_t number_of_attempts = 0; number_of_attempts < MAX_NUMBER_OF_ERRORS; number_of_attempts++) {
+        if (i2c::ERROR_OK == this->read_register(pin, this->pin_values_ + pin, 1)) {
+          success = true;
+          break;
         }
-        return;
       }
-      this->number_of_errors_ = 0;
-      ESP_LOGD(TAG, "Successful received sensor value[%d] for pin[%d].", this->pin_values_[pin], pin);
+      if (success) {
+        ESP_LOGD(TAG, "Successful received sensor value[%d] for pin[%d].", this->pin_values_[pin], pin);
+      } else {
+        ESP_LOGE(TAG, "Error reading input at pin: %d, %d times consecutively.", pin, MAX_NUMBER_OF_ERRORS);
+      }
     } else {
       ESP_LOGD(TAG, "Pin[%d] is disabled", pin);
     }
