@@ -29,7 +29,7 @@ void Stm32PortExpanderComponent::loop() {
         return;
       }
       this->number_of_errors_ = 0;
-      //ESP_LOGD(TAG, "Successful received binary sensor value[%d] for pin[%d].", this->pin_values_[pin], pin);
+      ESP_LOGD(TAG, "Successful received sensor value[%d] for pin[%d].", this->pin_values_[pin], pin);
     }
   }
 }
