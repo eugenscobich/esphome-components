@@ -24,13 +24,13 @@ void Stm32PortExpanderComponent::loop() {
     if (enabled_pins_[pin]) {
       if (i2c::ERROR_OK != this->read_register(pin, this->pin_values_ + pin, 1)) {
         if(this->number_of_errors_++ > MAX_NUMBER_OF_ERRORS) {
-          ESP_LOGE(TAG, "Error reading digital input at pin: %d, %d times consecutively.", pin, MAX_NUMBER_OF_ERRORS);
+          ESP_LOGE(TAG, "Error reading input at pin: %d, %d times consecutively.", pin, MAX_NUMBER_OF_ERRORS);
         }
         return;
       }
-      this->number_of_errors_ = 0;
       //ESP_LOGD(TAG, "Successful received binary sensor value[%d] for pin[%d].", this->pin_values_[pin], pin);
     }
+    this->number_of_errors_ = 0;
   }
 }
 
