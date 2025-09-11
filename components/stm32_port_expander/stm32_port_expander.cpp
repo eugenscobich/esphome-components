@@ -30,12 +30,12 @@ void Stm32PortExpanderComponent::loop() {
         }
       }
       if (success) {
-        ESP_LOGD(TAG, "Successful received sensor value[%d] for pin[%d].", this->pin_values_[pin], pin);
+        //ESP_LOGD(TAG, "Successful received sensor value[%d] for pin[%d].", this->pin_values_[pin], pin);
       } else {
-        ESP_LOGE(TAG, "Error reading input at pin: %d, %d times consecutively.", pin, MAX_NUMBER_OF_ERRORS);
+        //ESP_LOGE(TAG, "Error reading input at pin: %d, %d times consecutively.", pin, MAX_NUMBER_OF_ERRORS);
       }
     } else {
-      ESP_LOGD(TAG, "Pin[%d] is disabled", pin);
+      //ESP_LOGD(TAG, "Pin[%d] is disabled", pin);
     }
   }
 }
