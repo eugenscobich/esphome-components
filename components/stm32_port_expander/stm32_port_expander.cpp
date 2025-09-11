@@ -20,7 +20,7 @@ void Stm32PortExpanderComponent::setup() {
 }
 
 void Stm32PortExpanderComponent::loop() {
-  for (uint8_t pin = 0; pin < MAX_NUMBER_OF_PINS; pin++) {
+  for (uint8_t pin = 0; pin < 30; pin++) {
     if (enabled_pins_[pin]) {
       if (i2c::ERROR_OK != this->read_register(pin, this->pin_values_ + pin, 1)) {
         if(this->number_of_errors_++ > MAX_NUMBER_OF_ERRORS) {
