@@ -5,7 +5,7 @@
 #include "esphome/components/i2c/i2c.h"
 
 #define MAX_NUMBER_OF_PINS 30
-#define MAX_NUMBER_OF_ERRORS 3
+#define MAX_NUMBER_OF_ERRORS 5
 
 namespace esphome {
 namespace stm32_port_expander {
