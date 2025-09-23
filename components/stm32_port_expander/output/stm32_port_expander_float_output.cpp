@@ -6,7 +6,7 @@ namespace esphome {
 namespace stm32_port_expander {
 
 void Stm32PortExpanderFloatOutput::write_state(float state) {
-  this->parent_->analog_write(this->pin_, uint8_t(state * 100));
+  this->parent_->analog_write(this->pin_, uint8_t(state * 255));
 }
 
 

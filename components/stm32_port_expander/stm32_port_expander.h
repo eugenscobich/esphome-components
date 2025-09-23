@@ -3,37 +3,59 @@
 #include "esphome/core/component.h"
 #include "esphome/core/hal.h"
 #include "esphome/components/i2c/i2c.h"
+#include "esphome/components/gpio_expander/cached_gpio.h"
 
-#define MAX_NUMBER_OF_PINS 30
-#define MAX_NUMBER_OF_ERRORS 5
+#define READ_ANALOG_INPUT_VALUES_CMD 0 // this cmd will be combined with pin number. Pins 0-15 will be analog in
+#define READ_DIGITAL_INPUT_VALUES_CMD 16
+#define WRITE_DIGITAL_OUTPUT_VALUES_CMD 17
+#define WRITE_ANALOG_OUTPUT_VALUES_CMD 18
+
 
 namespace esphome {
 namespace stm32_port_expander {
 
-class Stm32PortExpanderComponent : public Component, public i2c::I2CDevice {
+class Stm32PortExpanderComponent : public Component,
+                                   public i2c::I2CDevice,
+                                   public gpio_expander::CachedGpioExpander<uint16_t, 16> {
  public:
   Stm32PortExpanderComponent() = default;
 
   void setup() override;
   /// Poll i2c
   void loop() override;
-  /// Helper function to read the value of a pin.
-  uint8_t read_pin_value(uint8_t pin);
-  /// Helper function to write the value of a pin.
-  void digital_write(uint8_t pin, bool value);
-  /// Helper function to read the voltage of a pin.
-  void analog_write(uint8_t pin, uint8_t value);
-
   float get_setup_priority() const override;
-
+  float get_loop_priority() const override;
   void dump_config() override;
 
-  void add_input_pin(uint8_t pin);
+  void pin_mode(uint8_t pin, gpio::Flags flags);
 
- private:
-  bool enabled_pins_[MAX_NUMBER_OF_PINS];
-  uint8_t pin_values_[MAX_NUMBER_OF_PINS];
-  uint8_t number_of_errors_;
+  void analog_write(uint8_t channel, uint8_t value);
+  uint8_t read_analog_input_value(uint8_t pin);
+
+ protected:
+  bool digital_read_hw(uint8_t pin) override;
+  bool digital_read_cache(uint8_t pin) override;
+  void digital_write_hw(uint8_t pin, bool value) override;
+
+  bool read_gpio_();
+  bool write_gpio_();
+
+  /// Mask for the pin mode - 1 means output, 0 means input
+  uint16_t digital_mode_mask_{0x0000};
+  /// The mask to write as output state - 1 means HIGH, 0 means LOW
+  uint16_t digital_output_values_{0x0000};
+  /// The state read in read_gpio_ - 1 means HIGH, 0 means LOW
+  uint16_t digital_input_values_{0x0000};
+
+  /// Structure to store enabled analog output pins
+  uint16_t analog_mode_mask_{0x0000};
+
+
+
+  uint8_t analog_output_values_[16] = {0x00};
+  uint8_t analog_input_values_[16] = {0x00};
+  uint16_t channels_needs_update_mask_{0x0000};
+
 };
 
 

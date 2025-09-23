@@ -15,7 +15,7 @@ void Stm32PortExpanderSensor::set_pin(uint8_t pin) {
 };
 
 void Stm32PortExpanderSensor::update() {
-  uint8_t value = this->parent_->read_pin_value(this->pin_);
+  uint8_t value = this->parent_->read_analog_input_value(this->pin_);
   this->publish_state(value);
 }
 

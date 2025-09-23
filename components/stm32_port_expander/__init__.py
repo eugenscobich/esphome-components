@@ -16,6 +16,7 @@ from esphome.const import (
 CONF_STM32_PORT_EXPANDER = "stm32_port_expander"
 CONF_STM32_PORT_EXPANDER_ID = "stm32_port_expander_id"
 
+AUTO_LOAD = ["gpio_expander"]
 DEPENDENCIES = ["i2c"]
 MULTI_CONF = True
 
@@ -62,7 +63,7 @@ STM32_PORT_EXPANDER_PIN_SCHEMA = cv.All(
         cv.GenerateID(): cv.declare_id(Stm32PortExpanderGPIOPin),
         cv.Required(CONF_Stm32PortExpander): cv.use_id(Stm32PortExpanderComponent),
         cv.Required(CONF_NUMBER): cv.All(
-            cv.int_range(min=0, max=29)
+            cv.int_range(min=0, max=15)
         ),
         cv.Optional(CONF_MODE, default={}): cv.All(
             {

@@ -7,93 +7,165 @@ namespace stm32_port_expander {
 
 static const char *const TAG = "stm32_port_expander";
 
-static const uint32_t CONFIGURE_TIMEOUT_MS = 3000;
+void Stm32PortExpanderComponent::setup() {
+  ESP_LOGCONFIG(TAG, "Setting up Stm32PortExpander at 0x%02X", this->address_);
 
-static const uint8_t CMD_ACK = 0; // Read value from first pin
+  if (!this->read_gpio_()) {
+    ESP_LOGE(TAG, "Stm32PortExpander not available under 0x%02X", this->address_);
+    this->mark_failed();
+    return;
+  }
+
+  this->write_gpio_();
+  this->read_gpio_();
+
+}
+
+void Stm32PortExpanderComponent::loop() {
+
+  for (uint8_t i = 0; i < 16; i++) {
+    if (this->channels_needs_update_mask_ & (1 << i) > 0) {
+      ESP_LOGV(TAG, "Pin[%d] requires update.", i);
+
+      uint8_t data[2];
+      data[0] = i;
+      data[1] = this->analog_output_values_[i];
+
+      bool success;
+      success = this->write_bytes(WRITE_ANALOG_OUTPUT_VALUES_CMD, data, 2);
+      if (!success) {
+        this->status_set_warning();
+        return false;
+      }
+    }
+  }
+
+  this->reset_pin_cache_();
+}
+
+void Stm32PortExpanderComponent::dump_config() {
+    ESP_LOGCONFIG(TAG, "Stm32PortExpander:");
+    LOG_I2C_DEVICE(this)
+    if (this->is_failed()) {
+      ESP_LOGE(TAG, ESP_LOG_MSG_COMM_FAIL);
+    }
+}
+
+bool Stm32PortExpanderComponent::digital_read_hw(uint8_t pin) {
+  // Read all pins from hardware into digital_input_values_
+  return this->read_gpio_();  // Return true if I2C read succeeded, false on error
+}
+
+bool Stm32PortExpanderComponent::digital_read_cache(uint8_t pin) {
+  return this->digital_input_values_ & (1 << pin);
+}
+
+void Stm32PortExpanderComponent::digital_write_hw(uint8_t pin, bool value) {
+  if (value) {
+    this->digital_output_values_ |= (1 << pin);
+  } else {
+    this->digital_output_values_ &= ~(1 << pin);
+  }
+  this->write_gpio_();
+}
+
+
+void Stm32PortExpanderComponent::pin_mode(uint8_t pin, gpio::Flags flags) {
+  if (flags == gpio::FLAG_INPUT) {
+    // Clear mode mask bit
+    this->mode_mask_ &= ~(1 << pin);
+    // Write GPIO to enable input mode
+    this->write_gpio_();
+  } else if (flags == gpio::FLAG_OUTPUT) {
+    // Set mode mask bit
+    this->mode_mask_ |= 1 << pin;
+  }
+}
+
+bool Stm32PortExpanderComponent::read_gpio_() {
+  if (this->is_failed())
+    return false;
+  bool success;
+  uint8_t data[2];
+  success = this->read_bytes(READ_DIGITAL_INPUT_VALUES_CMD, data, 2);
+  this->digital_input_values_ = (uint16_t(data[1]) << 8) | (uint16_t(data[0]) << 0);
+  if (!success) {
+    this->status_set_warning();
+    return false;
+  }
+  this->status_clear_warning();
+  return true;
+}
+
+bool Stm32PortExpanderComponent::write_gpio_() {
+  if (this->is_failed())
+    return false;
+
+  uint16_t value = 0;
+  // Pins in OUTPUT mode and where pin is HIGH.
+  value |= this->mode_mask_ & this->digital_output_values_;
+  // Pins in INPUT mode must also be set here
+  value |= ~this->mode_mask_;
+
+  uint8_t data[2];
+  data[0] = value;
+  data[1] = value >> 8;
+  bool success;
+  success = this->write_bytes(WRITE_DIGITAL_OUTPUT_VALUES_CMD, data, 2);
+  if (!success) {
+    this->status_set_warning();
+    return false;
+  }
+
+  this->status_clear_warning();
+  return true;
+}
 
 float Stm32PortExpanderComponent::get_setup_priority() const {
   return setup_priority::IO;
 }
 
-void Stm32PortExpanderComponent::setup() {
-  ESP_LOGCONFIG(TAG, "Setting up Stm32PortExpander at %#02x", this->address_);
-}
+// Run our loop() method early to invalidate cache before any other components access the pins
+float Stm32PortExpanderComponent::get_loop_priority() const {
+  return 9.0f;
+}  // Just after WIFI
 
-void Stm32PortExpanderComponent::loop() {
-  for (uint8_t pin = 0; pin < MAX_NUMBER_OF_PINS; pin++) {
-    if (enabled_pins_[pin]) {
-      bool success = false;
-      for (uint8_t number_of_attempts = 0; number_of_attempts < MAX_NUMBER_OF_ERRORS; number_of_attempts++) {
-        if (i2c::ERROR_OK == this->read_register(pin, this->pin_values_ + pin, 1)) {
-          success = true;
-          break;
-        }
-      }
-      if (success) {
-        ESP_LOGV(TAG, "Successful received sensor value[%d] for pin[%d].", this->pin_values_[pin], pin);
-      } else {
-        ESP_LOGE(TAG, "Error reading input at pin: %d, %d times consecutively.", pin, MAX_NUMBER_OF_ERRORS);
-      }
-    } else {
-      ESP_LOGV(TAG, "Pin[%d] is disabled", pin);
+
+void Stm32PortExpanderComponent::analog_write(uint8_t channel, uint8_t value) {
+    if (this->analog_output_values_[channel] != value) {
+      this->channels_needs_update_mask_ |= 1 << channel;
     }
+    this->analog_output_values_[channel] = value;
+}
+
+
+uint8_t Stm32PortExpanderComponent::read_analog_input_value(uint8_t channel) {
+  if (this->is_failed()) {
+    return false;
   }
-}
-
-void Stm32PortExpanderComponent::dump_config() {
-  ESP_LOGCONFIG(TAG, "Stm32PortExpander:");
-  LOG_I2C_DEVICE(this)
-}
-
-uint8_t Stm32PortExpanderComponent::read_pin_value(uint8_t pin) {
-  return this->pin_values_[pin];
-}
-
-void Stm32PortExpanderComponent::digital_write(uint8_t pin, bool value) {
-  uint8_t valueToSend = uint8_t(value);
-  bool success = (this->write_register(pin, &valueToSend, 1) == i2c::ERROR_OK);
+  bool success;
+  uint8_t data[2];
+  success = this->read_bytes(READ_ANALOG_INPUT_VALUES_CMD + channel, data, 1);
   if (!success) {
-    ESP_LOGW(TAG, "Could not write digital value %d to pin %d", valueToSend, pin);
     this->status_set_warning();
-    return;
+    return false;
   }
+  this->analog_input_values_[channel] = data;
+  this->status_clear_warning();
+  return data;
 }
-
-void Stm32PortExpanderComponent::analog_write(uint8_t pin, uint8_t value) {
-  bool success = this->write_register(pin, &value, 1) == i2c::ERROR_OK;
-  if (!success) {
-    ESP_LOGW(TAG, "Could not write analog value %d to pin %d", value, pin);
-    this->status_set_warning();
-    return;
-  }
-}
-
-
-void Stm32PortExpanderComponent::add_input_pin(uint8_t pin) {
-  ESP_LOGCONFIG(TAG, "Adding pin %d as input", pin);
-  this->enabled_pins_[pin] = true;
-}
-
-
-
-
-
 
 
 void Stm32PortExpanderGPIOPin::setup() {
-   ESP_LOGCONFIG(TAG, "Setting up Stm32PortExpanderGPIOPin for pin: %d and flags: %d", this->pin_, this->flags_);
-   if (this->flags_ == gpio::Flags::FLAG_INPUT) {
-     this->parent_->add_input_pin(this->pin_);
-   }
+   pin_mode(flags_);
 }
 
 void Stm32PortExpanderGPIOPin::pin_mode(gpio::Flags flags) {
-   ESP_LOGCONFIG(TAG, "Setting up pin mode for Stm32PortExpanderGPIOPin = %d", flags);
-   this->flags_ = flags;
+  this->parent_->pin_mode(this->pin_, flags);
 }
 
 bool Stm32PortExpanderGPIOPin::digital_read() {
-  return this->parent_->read_pin_value(this->pin_) != this->inverted_;
+  return this->parent_->digital_read(this->pin_) != this->inverted_;
 }
 
 void Stm32PortExpanderGPIOPin::digital_write(bool value) {
@@ -105,22 +177,6 @@ std::string Stm32PortExpanderGPIOPin::dump_summary() const {
   snprintf(buffer, sizeof(buffer), "%u via Stm32PortExpander", pin_);
   return buffer;
 }
-
-/*
-
-
-float ArduinoPortExpanderSensor::sample() {
-  return this->parent_->analog_read(this->pin_);
-}
-
-void ArduinoPortExpanderSensor::update() {
-  this->publish_state(this->sample());
-}
-
-void ArduinoPortExpanderFloatOutput::write_state(float state) {
-  this->parent_->analog_write(this->pin_, state);
-}
-*/
 
 }  // namespace stm32_port_expander
 }  // namespace esphome

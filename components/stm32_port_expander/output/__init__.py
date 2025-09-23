@@ -18,7 +18,7 @@ CONFIG_SCHEMA = output.FLOAT_OUTPUT_SCHEMA.extend(
   {
     cv.Required(CONF_ID): cv.declare_id(Stm32PortExpanderFloatOutput),
     cv.GenerateID(CONF_STM32_PORT_EXPANDER_ID): cv.use_id(Stm32PortExpanderComponent),
-    cv.Required(CONF_CHANNEL): cv.int_range(min=0, max=29),
+    cv.Required(CONF_CHANNEL): cv.int_range(min=0, max=15),
   }
 )
 
