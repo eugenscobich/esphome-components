@@ -23,7 +23,6 @@ class Stm32PortExpanderComponent : public Component,
   /// Poll i2c
   void loop() override;
   float get_setup_priority() const override;
-  float get_loop_priority() const override;
   void dump_config() override;
 
   void pin_mode(uint8_t pin, gpio::Flags flags);
