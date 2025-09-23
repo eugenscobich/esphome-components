@@ -15,8 +15,7 @@ namespace esphome {
 namespace stm32_port_expander {
 
 class Stm32PortExpanderComponent : public Component,
-                                   public i2c::I2CDevice,
-                                   public gpio_expander::CachedGpioExpander<uint16_t, 16> {
+                                   public i2c::I2CDevice {
  public:
   Stm32PortExpanderComponent() = default;
 
@@ -32,10 +31,10 @@ class Stm32PortExpanderComponent : public Component,
   void analog_write(uint8_t channel, uint8_t value);
   uint8_t read_analog_input_value(uint8_t pin);
 
+  bool digital_read(uint8_t pin);
+  void digital_write(uint8_t pin, bool value);
+
  protected:
-  bool digital_read_hw(uint8_t pin) override;
-  bool digital_read_cache(uint8_t pin) override;
-  void digital_write_hw(uint8_t pin, bool value) override;
 
   bool read_gpio_();
   bool write_gpio_();

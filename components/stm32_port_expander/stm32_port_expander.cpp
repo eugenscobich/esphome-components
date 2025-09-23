@@ -51,12 +51,8 @@ void Stm32PortExpanderComponent::dump_config() {
     }
 }
 
-bool Stm32PortExpanderComponent::digital_read_hw(uint8_t pin) {
-  // Read all pins from hardware into digital_input_values_
+bool Stm32PortExpanderComponent::digital_read(uint8_t pin) {
   return this->read_gpio_();  // Return true if I2C read succeeded, false on error
-}
-
-bool Stm32PortExpanderComponent::digital_read_cache(uint8_t pin) {
   return this->digital_input_values_ & (1 << pin);
 }
 
