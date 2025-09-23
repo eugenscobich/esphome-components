@@ -55,7 +55,7 @@ bool Stm32PortExpanderComponent::digital_read(uint8_t pin) {
   return this->digital_input_values_ & (1 << pin);
 }
 
-void Stm32PortExpanderComponent::digital_write_hw(uint8_t pin, bool value) {
+void Stm32PortExpanderComponent::digital_write(uint8_t pin, bool value) {
   if (value) {
     this->digital_output_values_ |= (1 << pin);
   } else {
