@@ -152,7 +152,7 @@ uint8_t Stm32PortExpanderComponent::read_analog_input_value(uint8_t channel) {
   }
   this->analog_input_values_[channel] = data[0];
   this->status_clear_warning();
-  return data;
+  return data[0];
 }
 
 
