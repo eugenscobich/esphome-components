@@ -119,12 +119,6 @@ float Stm32PortExpanderComponent::get_setup_priority() const {
   return setup_priority::IO;
 }
 
-// Run our loop() method early to invalidate cache before any other components access the pins
-float Stm32PortExpanderComponent::get_loop_priority() const {
-  return 9.0f;
-}  // Just after WIFI
-
-
 void Stm32PortExpanderComponent::analog_write(uint8_t channel, uint8_t value) {
     if (this->analog_output_values_[channel] != value) {
       this->channels_needs_update_mask_ |= 1 << channel;
