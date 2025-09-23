@@ -6,9 +6,9 @@
 #include "esphome/components/gpio_expander/cached_gpio.h"
 
 #define READ_ANALOG_INPUT_VALUES_CMD 0 // this cmd will be combined with pin number. Pins 0-15 will be analog in
-#define READ_DIGITAL_INPUT_VALUES_CMD 16
-#define WRITE_DIGITAL_OUTPUT_VALUES_CMD 17
-#define WRITE_ANALOG_OUTPUT_VALUES_CMD 18
+#define WRITE_ANALOG_OUTPUT_VALUES_CMD 16
+#define READ_DIGITAL_INPUT_VALUES_CMD 32
+#define WRITE_DIGITAL_OUTPUT_VALUES_CMD 33
 
 
 namespace esphome {
