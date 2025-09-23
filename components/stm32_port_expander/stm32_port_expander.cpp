@@ -40,7 +40,6 @@ void Stm32PortExpanderComponent::loop() {
     }
   }
 
-  this->reset_pin_cache_();
 }
 
 void Stm32PortExpanderComponent::dump_config() {
