@@ -35,7 +35,7 @@ void Stm32PortExpanderComponent::loop() {
       success = this->write_bytes(WRITE_ANALOG_OUTPUT_VALUES_CMD, data, 2);
       if (!success) {
         this->status_set_warning();
-        return false;
+        return;
       }
     }
   }
@@ -73,12 +73,12 @@ void Stm32PortExpanderComponent::digital_write_hw(uint8_t pin, bool value) {
 void Stm32PortExpanderComponent::pin_mode(uint8_t pin, gpio::Flags flags) {
   if (flags == gpio::FLAG_INPUT) {
     // Clear mode mask bit
-    this->mode_mask_ &= ~(1 << pin);
+    this->digital_mode_mask_ &= ~(1 << pin);
     // Write GPIO to enable input mode
     this->write_gpio_();
   } else if (flags == gpio::FLAG_OUTPUT) {
     // Set mode mask bit
-    this->mode_mask_ |= 1 << pin;
+    this->digital_mode_mask_ |= 1 << pin;
   }
 }
 
@@ -103,9 +103,9 @@ bool Stm32PortExpanderComponent::write_gpio_() {
 
   uint16_t value = 0;
   // Pins in OUTPUT mode and where pin is HIGH.
-  value |= this->mode_mask_ & this->digital_output_values_;
+  value |= this->digital_mode_mask_ & this->digital_output_values_;
   // Pins in INPUT mode must also be set here
-  value |= ~this->mode_mask_;
+  value |= ~this->digital_mode_mask_;
 
   uint8_t data[2];
   data[0] = value;
@@ -144,13 +144,13 @@ uint8_t Stm32PortExpanderComponent::read_analog_input_value(uint8_t channel) {
     return false;
   }
   bool success;
-  uint8_t data[2];
+  uint8_t data[1];
   success = this->read_bytes(READ_ANALOG_INPUT_VALUES_CMD + channel, data, 1);
   if (!success) {
     this->status_set_warning();
     return false;
   }
-  this->analog_input_values_[channel] = data;
+  this->analog_input_values_[channel] = data[0];
   this->status_clear_warning();
   return data;
 }
