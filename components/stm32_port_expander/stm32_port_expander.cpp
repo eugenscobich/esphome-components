@@ -16,8 +16,8 @@ void Stm32PortExpanderComponent::setup() {
     return;
   }
 
-  this->write_gpio_();
-  this->read_gpio_();
+  //this->write_gpio_();
+  //this->read_gpio_();
 
 }
 
