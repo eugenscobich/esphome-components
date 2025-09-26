@@ -80,10 +80,11 @@ bool Stm32PortExpanderComponent::read_gpio_1_() {
   if (this->is_failed()) {
     return false;
   }
-
+  ESP_LOGI(TAG, "Stm32PortExpander read gpio 1");
   write_data[0] = READ_DIGITAL_INPUT_VALUE_1_CMD;
   write_data[1] = ACK_VALUE;
   if(this->write_read(write_data, 2, read_data, 1) == esphome::i2c::ERROR_OK) {
+	  ESP_LOGI(TAG, "Stm32PortExpander read value %d", read_data[0]);
 	  digital_input_values_[0] = read_data[0];
 	  this->status_clear_warning();
 	  return true;
