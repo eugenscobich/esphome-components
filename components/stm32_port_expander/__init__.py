@@ -63,7 +63,7 @@ STM32_PORT_EXPANDER_PIN_SCHEMA = cv.All(
         cv.GenerateID(): cv.declare_id(Stm32PortExpanderGPIOPin),
         cv.Required(CONF_Stm32PortExpander): cv.use_id(Stm32PortExpanderComponent),
         cv.Required(CONF_NUMBER): cv.All(
-            cv.int_range(min=0, max=15)
+            cv.int_range(min=0, max=31)
         ),
         cv.Optional(CONF_MODE, default={}): cv.All(
             {

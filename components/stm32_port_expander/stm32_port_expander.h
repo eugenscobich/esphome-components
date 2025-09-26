@@ -7,8 +7,11 @@
 
 #define READ_ANALOG_INPUT_VALUES_CMD 0 // this cmd will be combined with pin number. Pins 0-15 will be analog in
 #define WRITE_ANALOG_OUTPUT_VALUES_CMD 16
-#define READ_DIGITAL_INPUT_VALUES_CMD 32
-#define WRITE_DIGITAL_OUTPUT_VALUES_CMD 33
+#define READ_DIGITAL_INPUT_VALUE_1_CMD 32
+#define READ_DIGITAL_INPUT_VALUE_2_CMD 33
+#define WRITE_DIGITAL_OUTPUT_VALUE_1_CMD 34
+#define WRITE_DIGITAL_OUTPUT_VALUE_2_CMD 35
+#define ACK_VALUE 130 // Like a password
 
 
 namespace esphome {
@@ -27,7 +30,7 @@ class Stm32PortExpanderComponent : public Component,
 
   void pin_mode(uint8_t pin, gpio::Flags flags);
 
-  void analog_write(uint8_t channel, uint8_t value);
+  void write_analog_output_value(uint8_t pin, uint8_t value);
   uint8_t read_analog_input_value(uint8_t pin);
 
   bool digital_read(uint8_t pin);
@@ -35,24 +38,20 @@ class Stm32PortExpanderComponent : public Component,
 
  protected:
 
-  bool read_gpio_();
-  bool write_gpio_();
+  bool read_gpio_1_();
+  bool read_gpio_2_();
+  bool write_gpio_1();
+  bool write_gpio_2_();
 
-  /// Mask for the pin mode - 1 means output, 0 means input
-  uint16_t digital_mode_mask_{0x0000};
-  /// The mask to write as output state - 1 means HIGH, 0 means LOW
-  uint16_t digital_output_values_{0x0000};
-  /// The state read in read_gpio_ - 1 means HIGH, 0 means LOW
-  uint16_t digital_input_values_{0x0000};
-
-  /// Structure to store enabled analog output pins
-  uint16_t analog_mode_mask_{0x0000};
-
-
-
+  uint8_t digital_input_values[2] = {0x00};
+  uint8_t digital_output_values[2] = {0x00};
+ 
   uint8_t analog_output_values_[16] = {0x00};
   uint8_t analog_input_values_[16] = {0x00};
-  uint16_t channels_needs_update_mask_{0x0000};
+  //uint16_t channels_needs_update_mask_{0x0000};
+
+  uint8_t write_data[2] = {0x00};
+  uint8_t read_data[1] = {0x00};
 
 };
 

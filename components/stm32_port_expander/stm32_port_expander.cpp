@@ -10,7 +10,7 @@ static const char *const TAG = "stm32_port_expander";
 void Stm32PortExpanderComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up Stm32PortExpander at 0x%02X", this->address_);
 
-  if (!this->read_gpio_()) {
+  if (!this->read_gpio_1_()) {
     ESP_LOGE(TAG, "Stm32PortExpander not available under 0x%02X", this->address_);
     this->mark_failed();
     return;
@@ -76,71 +76,112 @@ void Stm32PortExpanderComponent::pin_mode(uint8_t pin, gpio::Flags flags) {
   }
 }
 
-bool Stm32PortExpanderComponent::read_gpio_() {
-  if (this->is_failed())
-    return false;
-  bool success;
-  uint8_t data[2];
-  success = this->read_bytes(READ_DIGITAL_INPUT_VALUES_CMD, data, 2);
-  this->digital_input_values_ = (uint16_t(data[1]) << 8) | (uint16_t(data[0]) << 0);
-  if (!success) {
-    this->status_set_warning();
+bool Stm32PortExpanderComponent::read_gpio_1_() {
+  if (this->is_failed()) {
     return false;
   }
-  this->status_clear_warning();
-  return true;
+
+  write_data[0] = READ_DIGITAL_INPUT_VALUE_1_CMD;
+  write_data[1] = ACK_VALUE;
+  if(this->write_read(write_data, 2, read_data, 1) == ERROR_OK) {
+	  digital_input_values[0] = read_data[0];
+	  this->status_clear_warning();
+	  return true;
+  }
+
+  this->status_set_warning("Could not read digital input part one");
+  return false;
+
 }
 
-bool Stm32PortExpanderComponent::write_gpio_() {
-  if (this->is_failed())
-    return false;
-
-  uint16_t value = 0;
-  // Pins in OUTPUT mode and where pin is HIGH.
-  value |= this->digital_mode_mask_ & this->digital_output_values_;
-  // Pins in INPUT mode must also be set here
-  value |= ~this->digital_mode_mask_;
-
-  uint8_t data[2];
-  data[0] = value;
-  data[1] = value >> 8;
-  bool success;
-  success = this->write_bytes(WRITE_DIGITAL_OUTPUT_VALUES_CMD, data, 2);
-  if (!success) {
-    this->status_set_warning();
+bool Stm32PortExpanderComponent::read_gpio_2_() {
+  if (this->is_failed()) {
     return false;
   }
 
-  this->status_clear_warning();
-  return true;
+  write_data[0] = READ_DIGITAL_INPUT_VALUE_2_CMD;
+  write_data[1] = ACK_VALUE;
+  if(this->write_read(write_data, 2, read_data, 1) == ERROR_OK) {
+	  digital_input_values[1] = read_data[0];
+	  this->status_clear_warning();
+	  return true;
+  }
+
+  this->status_set_warning("Could not read digital input part two");
+  return false;
+
+}
+
+bool Stm32PortExpanderComponent::write_gpio_1_() {
+  if (this->is_failed()) {
+    return false;
+  }
+
+  write_data[0] = WRITE_DIGITAL_OUTPUT_VALUE_1_CMD;
+  write_data[1] = digital_output_values[0];
+  if(this->write_read(write_data, 2, read_data, 1) == ERROR_OK) {
+    this->status_clear_warning();
+    return true;
+  }
+
+  this->status_set_warning("Could not write digital input part one");
+  return false;
+}
+
+bool Stm32PortExpanderComponent::write_gpio_2_() {
+  if (this->is_failed()) {
+    return false;
+  }
+
+  write_data[0] = WRITE_DIGITAL_OUTPUT_VALUE_1_CMD;
+  write_data[1] = digital_output_values[1];
+  if(this->write_read(write_data, 2, read_data, 1) == ERROR_OK) {
+    this->status_clear_warning();
+    return true;
+  }
+
+  this->status_set_warning("Could not write digital input part one");
+  return false;
 }
 
 float Stm32PortExpanderComponent::get_setup_priority() const {
   return setup_priority::IO;
 }
 
-void Stm32PortExpanderComponent::analog_write(uint8_t channel, uint8_t value) {
-    if (this->analog_output_values_[channel] != value) {
-      this->channels_needs_update_mask_ |= 1 << channel;
+void Stm32PortExpanderComponent::write_analog_output_value(uint8_t pin, uint8_t value) {
+    if (this->analog_output_values_[pin] != value) {
+      if (this->is_failed()) {
+		return false;
+	  }
+
+	  write_data[0] = WRITE_ANALOG_OUTPUT_VALUES_CMD;
+	  write_data[1] = value;
+	  if(this->write_read(write_data, 2, read_data, 1) == ERROR_OK) {
+		this->status_clear_warning();
+	  }
+
+	  this->status_set_warning("Could not write analog output value");
     }
-    this->analog_output_values_[channel] = value;
+    this->analog_output_values_[pin] = value;
 }
 
 
-uint8_t Stm32PortExpanderComponent::read_analog_input_value(uint8_t channel) {
+uint8_t Stm32PortExpanderComponent::read_analog_input_value(uint8_t pin) {
+
   if (this->is_failed()) {
-    return false;
+  	return false;
   }
-  bool success;
-  uint8_t data[1];
-  success = this->read_bytes(READ_ANALOG_INPUT_VALUES_CMD + channel, data, 1);
-  if (!success) {
-    this->status_set_warning();
-    return false;
+
+  write_data[0] = READ_ANALOG_INPUT_VALUES_CMD;
+  write_data[1] = ACK_VALUE;
+  if(this->write_read(write_data, 2, read_data, 1) == ERROR_OK) {
+    this->status_clear_warning();
+    this->analog_input_values_[pin] = read_data[0];
+    return read_data[0];
   }
-  this->analog_input_values_[channel] = data[0];
-  this->status_clear_warning();
-  return data[0];
+
+  this->status_set_warning("Could not read analog input value");
+  return 0;
 }
 
 
