@@ -48,7 +48,6 @@ class Stm32PortExpanderComponent : public Component,
  
   uint8_t analog_output_values_[16] = {0x00};
   uint8_t analog_input_values_[16] = {0x00};
-  //uint16_t channels_needs_update_mask_{0x0000};
 
   uint8_t write_data[2] = {0x00};
   uint8_t read_data[1] = {0x00};

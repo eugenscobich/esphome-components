@@ -23,22 +23,6 @@ void Stm32PortExpanderComponent::setup() {
 
 void Stm32PortExpanderComponent::loop() {
 
-  for (uint8_t i = 0; i < 16; i++) {
-    if (this->channels_needs_update_mask_ & (1 << i) > 0) {
-      ESP_LOGV(TAG, "Pin[%d] requires update.", i);
-
-      uint8_t data[1];
-      data[0] = this->analog_output_values_[i];
-
-      bool success;
-      success = this->write_bytes(WRITE_ANALOG_OUTPUT_VALUES_CMD + i, data, 1);
-      if (!success) {
-        this->status_set_warning();
-        return;
-      }
-    }
-  }
-
 }
 
 void Stm32PortExpanderComponent::dump_config() {

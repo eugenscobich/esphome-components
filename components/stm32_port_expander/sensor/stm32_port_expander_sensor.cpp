@@ -6,7 +6,6 @@ namespace esphome {
 namespace stm32_port_expander {
 
 void Stm32PortExpanderSensor::setup() {
-  //this->parent_->add_input_pin(this->pin_);
 };
 
 
