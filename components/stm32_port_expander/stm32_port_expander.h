@@ -40,7 +40,7 @@ class Stm32PortExpanderComponent : public Component,
 
   bool read_gpio_1_();
   bool read_gpio_2_();
-  bool write_gpio_1();
+  bool write_gpio_1_();
   bool write_gpio_2_();
 
   uint8_t digital_input_values_[2] = {0x00};
