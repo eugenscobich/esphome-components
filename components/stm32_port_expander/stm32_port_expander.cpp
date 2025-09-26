@@ -22,7 +22,7 @@ void Stm32PortExpanderComponent::setup() {
 }
 
 void Stm32PortExpanderComponent::loop() {
-
+	this->reset_pin_cache_();
 }
 
 void Stm32PortExpanderComponent::dump_config() {
@@ -183,11 +183,21 @@ void Stm32PortExpanderGPIOPin::pin_mode(gpio::Flags flags) {
   this->parent_->pin_mode(this->pin_, flags);
 }
 
-bool Stm32PortExpanderGPIOPin::digital_read() {
+bool Stm32PortExpanderGPIOPin::digital_read_hw() {
   return this->parent_->digital_read(this->pin_) != this->inverted_;
 }
 
-void Stm32PortExpanderGPIOPin::digital_write(bool value) {
+bool Stm32PortExpanderGPIOPin::digital_read_cache(uint8_t pin) {
+  if (pin >=0 && pin <=7) {
+	this->read_gpio_1_();
+	return this->digital_input_values_[0] & (1 << pin);
+  } else {
+	this->read_gpio_2_();
+	return this->digital_input_values_[1] & (1 << pin - 8);
+  }
+}
+
+void Stm32PortExpanderGPIOPin::digital_write_hw(bool value) {
     this->parent_->digital_write(this->pin_, value != this->inverted_);
 }
 
