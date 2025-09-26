@@ -27,24 +27,39 @@ void Stm32PortExpanderComponent::loop() {
 
 void Stm32PortExpanderComponent::dump_config() {
     ESP_LOGCONFIG(TAG, "Stm32PortExpander:");
-    LOG_I2C_DEVICE(this)
+    LOG_I2C_DEVICE(this);
     if (this->is_failed()) {
       ESP_LOGE(TAG, ESP_LOG_MSG_COMM_FAIL);
     }
 }
 
 bool Stm32PortExpanderComponent::digital_read(uint8_t pin) {
-  return this->read_gpio_();  // Return true if I2C read succeeded, false on error
-  return this->digital_input_values_ & (1 << pin);
+  if (pin >=0 && pin <=7) {
+	this->read_gpio_1_();
+	return this->digital_input_values_[0] & (1 << pin);
+  } else {
+	this->read_gpio_2_();
+	return this->digital_input_values_[1] & (1 << pin - 8);
+  }
+  return false;
 }
 
 void Stm32PortExpanderComponent::digital_write(uint8_t pin, bool value) {
-  if (value) {
-    this->digital_output_values_ |= (1 << pin);
-  } else {
-    this->digital_output_values_ &= ~(1 << pin);
-  }
-  this->write_gpio_();
+	if (pin >=16 && pin <=23) {
+	  if (value) {
+		this->digital_output_values_[0]|= (1 << pin - 16);
+	  } else {
+		this->digital_output_values_[0] &= ~(1 << pin - 16);
+	  }
+	  this->write_gpio_1_();
+	} else if (pin >=24 && pin <=31) {
+	  if (value) {
+		this->digital_output_values_[1]|= (1 << pin - 16);
+	  } else {
+		this->digital_output_values_[1] &= ~(1 << pin - 16);
+	  }
+	  this->write_gpio_2_();
+	}
 }
 
 
@@ -68,7 +83,7 @@ bool Stm32PortExpanderComponent::read_gpio_1_() {
   write_data[0] = READ_DIGITAL_INPUT_VALUE_1_CMD;
   write_data[1] = ACK_VALUE;
   if(this->write_read(write_data, 2, read_data, 1) == ERROR_OK) {
-	  digital_input_values[0] = read_data[0];
+	  digital_input_values_[0] = read_data[0];
 	  this->status_clear_warning();
 	  return true;
   }
@@ -86,7 +101,7 @@ bool Stm32PortExpanderComponent::read_gpio_2_() {
   write_data[0] = READ_DIGITAL_INPUT_VALUE_2_CMD;
   write_data[1] = ACK_VALUE;
   if(this->write_read(write_data, 2, read_data, 1) == ERROR_OK) {
-	  digital_input_values[1] = read_data[0];
+	  digital_input_values_[1] = read_data[0];
 	  this->status_clear_warning();
 	  return true;
   }
