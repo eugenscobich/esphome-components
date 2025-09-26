@@ -142,7 +142,7 @@ float Stm32PortExpanderComponent::get_setup_priority() const {
 void Stm32PortExpanderComponent::write_analog_output_value(uint8_t pin, uint8_t value) {
     if (this->analog_output_values_[pin] != value) {
       if (this->is_failed()) {
-		return false;
+		return;
 	  }
 
 	  write_data[0] = WRITE_ANALOG_OUTPUT_VALUES_CMD;
@@ -158,9 +158,8 @@ void Stm32PortExpanderComponent::write_analog_output_value(uint8_t pin, uint8_t 
 
 
 uint8_t Stm32PortExpanderComponent::read_analog_input_value(uint8_t pin) {
-
   if (this->is_failed()) {
-  	return false;
+  	return 0;
   }
 
   write_data[0] = READ_ANALOG_INPUT_VALUES_CMD;
