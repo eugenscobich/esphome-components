@@ -64,15 +64,7 @@ void Stm32PortExpanderComponent::digital_write(uint8_t pin, bool value) {
 
 
 void Stm32PortExpanderComponent::pin_mode(uint8_t pin, gpio::Flags flags) {
-  if (flags == gpio::FLAG_INPUT) {
-    // Clear mode mask bit
-    this->digital_mode_mask_ &= ~(1 << pin);
-    // Write GPIO to enable input mode
-    this->write_gpio_();
-  } else if (flags == gpio::FLAG_OUTPUT) {
-    // Set mode mask bit
-    this->digital_mode_mask_ |= 1 << pin;
-  }
+
 }
 
 bool Stm32PortExpanderComponent::read_gpio_1_() {
@@ -82,7 +74,7 @@ bool Stm32PortExpanderComponent::read_gpio_1_() {
 
   write_data[0] = READ_DIGITAL_INPUT_VALUE_1_CMD;
   write_data[1] = ACK_VALUE;
-  if(this->write_read(write_data, 2, read_data, 1) == ERROR_OK) {
+  if(this->write_read(write_data, 2, read_data, 1) == esphome::i2c::ERROR_OK) {
 	  digital_input_values_[0] = read_data[0];
 	  this->status_clear_warning();
 	  return true;
@@ -100,7 +92,7 @@ bool Stm32PortExpanderComponent::read_gpio_2_() {
 
   write_data[0] = READ_DIGITAL_INPUT_VALUE_2_CMD;
   write_data[1] = ACK_VALUE;
-  if(this->write_read(write_data, 2, read_data, 1) == ERROR_OK) {
+  if(this->write_read(write_data, 2, read_data, 1) == esphome::i2c::ERROR_OK) {
 	  digital_input_values_[1] = read_data[0];
 	  this->status_clear_warning();
 	  return true;
@@ -118,7 +110,7 @@ bool Stm32PortExpanderComponent::write_gpio_1_() {
 
   write_data[0] = WRITE_DIGITAL_OUTPUT_VALUE_1_CMD;
   write_data[1] = digital_output_values[0];
-  if(this->write_read(write_data, 2, read_data, 1) == ERROR_OK) {
+  if(this->write_read(write_data, 2, read_data, 1) == esphome::i2c::ERROR_OK) {
     this->status_clear_warning();
     return true;
   }
@@ -134,7 +126,7 @@ bool Stm32PortExpanderComponent::write_gpio_2_() {
 
   write_data[0] = WRITE_DIGITAL_OUTPUT_VALUE_1_CMD;
   write_data[1] = digital_output_values[1];
-  if(this->write_read(write_data, 2, read_data, 1) == ERROR_OK) {
+  if(this->write_read(write_data, 2, read_data, 1) == esphome::i2c::ERROR_OK) {
     this->status_clear_warning();
     return true;
   }
@@ -155,7 +147,7 @@ void Stm32PortExpanderComponent::write_analog_output_value(uint8_t pin, uint8_t 
 
 	  write_data[0] = WRITE_ANALOG_OUTPUT_VALUES_CMD;
 	  write_data[1] = value;
-	  if(this->write_read(write_data, 2, read_data, 1) == ERROR_OK) {
+	  if(this->write_read(write_data, 2, read_data, 1) == esphome::i2c::ERROR_OK) {
 		this->status_clear_warning();
 	  }
 
@@ -173,7 +165,7 @@ uint8_t Stm32PortExpanderComponent::read_analog_input_value(uint8_t pin) {
 
   write_data[0] = READ_ANALOG_INPUT_VALUES_CMD;
   write_data[1] = ACK_VALUE;
-  if(this->write_read(write_data, 2, read_data, 1) == ERROR_OK) {
+  if(this->write_read(write_data, 2, read_data, 1) == esphome::i2c::ERROR_OK) {
     this->status_clear_warning();
     this->analog_input_values_[pin] = read_data[0];
     return read_data[0];
