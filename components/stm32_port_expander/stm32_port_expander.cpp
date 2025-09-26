@@ -109,7 +109,7 @@ bool Stm32PortExpanderComponent::write_gpio_1_() {
   }
 
   write_data[0] = WRITE_DIGITAL_OUTPUT_VALUE_1_CMD;
-  write_data[1] = digital_output_values[0];
+  write_data[1] = digital_output_values_[0];
   if(this->write_read(write_data, 2, read_data, 1) == esphome::i2c::ERROR_OK) {
     this->status_clear_warning();
     return true;
@@ -125,7 +125,7 @@ bool Stm32PortExpanderComponent::write_gpio_2_() {
   }
 
   write_data[0] = WRITE_DIGITAL_OUTPUT_VALUE_1_CMD;
-  write_data[1] = digital_output_values[1];
+  write_data[1] = digital_output_values_[1];
   if(this->write_read(write_data, 2, read_data, 1) == esphome::i2c::ERROR_OK) {
     this->status_clear_warning();
     return true;
