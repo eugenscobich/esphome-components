@@ -155,7 +155,7 @@ void Stm32PortExpanderComponent::write_analog_output_value(uint8_t pin, uint8_t 
 		return;
 	  }
 
-	  write_data[0] = WRITE_ANALOG_OUTPUT_VALUES_CMD;
+	  write_data[0] = WRITE_ANALOG_OUTPUT_VALUES_CMD + pin;
 	  write_data[1] = value;
 	  if(this->write_read(write_data, 2, read_data, 1) == esphome::i2c::ERROR_OK) {
 		this->status_clear_warning();
@@ -172,7 +172,7 @@ uint8_t Stm32PortExpanderComponent::read_analog_input_value(uint8_t pin) {
   	return 0;
   }
 
-  write_data[0] = READ_ANALOG_INPUT_VALUES_CMD;
+  write_data[0] = READ_ANALOG_INPUT_VALUES_CMD + pin;
   write_data[1] = ACK_VALUE;
   if(this->write_read(write_data, 2, read_data, 1) == esphome::i2c::ERROR_OK) {
     this->status_clear_warning();
