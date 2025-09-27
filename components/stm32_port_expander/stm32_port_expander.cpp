@@ -159,9 +159,9 @@ void Stm32PortExpanderComponent::write_analog_output_value(uint8_t pin, uint8_t 
 	  write_data[1] = value;
 	  if(this->write_read(write_data, 2, read_data, 1) == esphome::i2c::ERROR_OK) {
 		this->status_clear_warning();
+	  } else {
+	    this->status_set_warning("Could not write analog output value");
 	  }
-
-	  this->status_set_warning("Could not write analog output value");
     }
     this->analog_output_values_[pin] = value;
 }
